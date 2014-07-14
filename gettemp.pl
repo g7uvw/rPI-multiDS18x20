@@ -2,35 +2,45 @@
 use strict;
 use warnings;
 
+#made sure we've got the 1-wire modules loaded
 &check_modules;
+
+#load up the device ID file.
 &get_device_IDs;
 
-my $in_correction = 6.0;
-my $out_correction = 2.1;
+use vars qw(%deviceIDs %deviceCal);
+
 my $count = 0;
 my $reading = -1;
 my $device = -1;
-my @deviceIDs;
+#my @deviceIDs;
 my @temp_readings;
+my %T_readings  = ();
+my $templateline = " --template ";
+my $updateline = " N:";
+my $commandline = "rrdtool update multirPItemp.rrd"; #change to match your file locations
 
-foreach $device (@deviceIDs)
-{
-    $reading = &read_device($device);
+
+for my $key ( keys %deviceIDs ) {
+    my $ID = $deviceIDs{$key};
+    $reading = &read_device($ID);
     if ($reading == 9999) {
        $reading = "U";
     }
-            
-    push(@temp_readings,$reading);
-          
-}
+    $T_readings{$key} = $reading + $deviceCal{$key};
+    $templateline .= $key;
+    $templateline .= ":";
+    $updateline .= $T_readings{$key} . ":";
+    }
 
+#ditch extra ":" that makes rrdtool fail
+chop($templateline);
+chop($updateline);
 
-if ($temp_readings[0] ne 'U') {$temp_readings[0] -= $in_correction;}
-if ($temp_readings[1] ne 'U') {$temp_readings[1] -= $out_correction;}
-
-#update the database
-`/usr/bin/rrdtool update  /home/pi/temperature/multirPItemp.rrd N:$temp_readings[0]:$temp_readings[1]`;
-print "Temp 1 = $temp_readings[0]    Temp 2 = $temp_readings[1]\n";
+$commandline .= $templateline;
+$commandline .= $updateline;
+print $commandline ."\n";
+system ($commandline);
 
 
 sub check_modules
@@ -43,26 +53,36 @@ if ($mods =~ /w1_gpio/ && $mods =~ /w1_therm/)
 else 
 {
 print "loading w1 modules \n";
+	`sudo modprobe wire`;
     `sudo modprobe w1-gpio`;
     `sudo modprobe w1-therm`;
 } 
 }
 
 
+
 sub get_device_IDs
 {
-# The Hex IDs off all detected 1-wire devices on the bus are stored in the file
-# "w1_master_slaves"    
+# If you've run detect.pl before, sensors.conf should be a CSV file containing a list of indicies and deviceIDs
+# Pull them into a hash here for processing later
 
 # open file
-open(FILE, "/sys/bus/w1/devices/w1_bus_master1/w1_master_slaves") or die("Unable to open file");
- 
-# read file into an array
- @deviceIDs = <FILE>;
- 
- # close file 
- close(FILE);
+open(INFILE, "sensors.conf") or die("Unable to open file");
+
+while(<INFILE>)
+{
+	chomp;
+	(my $index, my $cal, my $ID) = split(/,/);
+	$index =~ s/\s*$//g;
+	$deviceIDs{$index} = $ID;
+	$deviceCal{$index} = $cal;
 }
+
+close(INFILE);
+}
+
+
+
 
 sub read_device
 {
@@ -76,7 +96,7 @@ sub read_device
     my $ret = 9999; # default to return 9999 (fail)
    
     my $sensordata = `cat /sys/bus/w1/devices/${deviceID}/w1_slave 2>&1`;
-    print "Read: $sensordata";
+    #print "Read: $sensordata";
 
 
    if(index($sensordata, 'YES') != -1) {

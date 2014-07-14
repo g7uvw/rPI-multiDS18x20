@@ -1,4 +1,6 @@
 This code supports the page at: 
 http://webshed.org/wiki/RaspberryPI_Multiple_DS1820
 
+The new version works with multiple sensors & doesn't forget how they are ordered on the bus. There was a "feature" in the old version of the code where upon reset, the sensors might get detected in a different order and data written to the wrong slots n the RRDtool database.
+
 --David G7UVW

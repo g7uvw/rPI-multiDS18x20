@@ -3,6 +3,21 @@ http://webshed.org/wiki/RaspberryPI_Multiple_DS1820
 
 The new version works with multiple sensors & doesn't forget how they are ordered on the bus. There was a "feature" in the old version of the code where upon reset, the sensors might get detected in a different order and data written to the wrong slots in the RRDtool database.
 
-There is an example sensors.conf & database in the /example directory. This is for a 6 sensor system. The graph plotting script can be used as an base to create your own, if you come up eith a good way to programatically generate the graph plotting script, please share it with me!
+There is an example sensors.conf & database in the /example directory. This is for a 6 sensor system. The graph plotting script can be used as a base to create your own, if you come up eith a good way to programatically generate the graph plotting script, please share it with me!
+
+==Very short HOWTO==
+
+Install the 1-wire libraries on your rPI
+Wire up your sensors according to the diagram here - just connect multiple sensors in parallel (http://webshed.org/wiki/File:Fritzing_rPI_DS1820.png)
+
+run detect.pl to find sesnors in the 1-wire bus
+edit sensors.conf to give them nice names (if you wish) and any offset / calibration values you need
+(format is NAME , OFFSET , 1-WIRE ID)
+
+run makedb.pl to create the RRDTOOL database
+
+call gettemp.pl from a cron job or some otherway to periodically read the sensors and update the database
+
+use the examples/graph.sh file as a base for your own graphing needs.
 
 --David G7UVW

@@ -8,7 +8,7 @@ use warnings;
 #load up the device ID file.
 &get_device_IDs;
 
-use vars qw(%deviceIDs %deviceCal);
+use vars qw(%deviceIDs %deviceCal $path);
 
 my $count = 0;
 my $reading = -1;
@@ -18,7 +18,8 @@ my @temp_readings;
 my %T_readings  = ();
 my $templateline = " --template ";
 my $updateline = " N:";
-my $commandline = "rrdtool update multirPItemp.rrd"; #change to match your file locations
+my $path = "/home/pi/rPI-multiDS18x20/example/";
+my $commandline = "rrdtool updatev " . $path ."multirPItemp.rrd"; #change to match your file locations
 
 
 for my $key ( keys %deviceIDs ) {

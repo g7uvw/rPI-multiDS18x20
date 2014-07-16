@@ -1,0 +1,12 @@
+This is a simple example.
+
+There are 6 sensors on the bus, detected with "./detect.pl" the sensors.conf file has been edited 
+to give them nice names, named after the planets - just to show you can. I've also set different offsets / cal
+values for each of them, else all 6 will show the same temp (they are next to each other on the breadboard).
+
+A cron job calls "gettemp.pl" every 300s and "graph.sh" every 360s. You'll need to edit "graph.sh" or use it as
+a base for your own graphing software. You should be able to make changed to "graph.sh" here and run it against 
+the example database to check it works.
+
+Have fun.
+

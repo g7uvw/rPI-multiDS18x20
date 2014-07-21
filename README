@@ -1,3 +1,6 @@
+This branch supports DH11 humidity sensor and BMP85 pressure sensor on the rPI too. Uses Adafruit libs for the other two sensors
+
+
 This code supports the page at: 
 http://webshed.org/wiki/RaspberryPI_Multiple_DS1820
 

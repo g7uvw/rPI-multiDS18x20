@@ -18,17 +18,28 @@ my @temp_readings;
 my %T_readings  = ();
 my $templateline = " --template ";
 my $updateline = " N:";
-my $path = "/home/pi/rPI-multiDS18x20/example/";
+my $path = "/home/pi/weather/";
 my $commandline = "rrdtool updatev " . $path ."multirPItemp.rrd"; #change to match your file locations
-
+my $pressure;
+my $humidity;
 
 for my $key ( keys %deviceIDs ) {
     my $ID = $deviceIDs{$key};
-    $reading = &read_device($ID);
-    if ($reading == 9999) {
-       $reading = "U";
+    
+    if ($ID==123) {
+        $reading = `sudo python pressure.py`;
+        print $ID . " " . $reading . "\n";
+    } elsif ($ID==456) {
+        $reading = `sudo python humidity.py 11 17`;
+        print $ID . " " . $reading . "\n";
+    } else {
+        $reading = &read_device($ID);
+  		if ($reading == 9999) {
+       	$reading = "U";
+    	}
     }
-    $T_readings{$key} = $reading + $deviceCal{$key};
+    
+   $T_readings{$key} = $reading + $deviceCal{$key};
     $templateline .= $key;
     $templateline .= ":";
     $updateline .= $T_readings{$key} . ":";

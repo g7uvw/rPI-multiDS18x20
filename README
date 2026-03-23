@@ -8,7 +8,7 @@ There is an example sensors.conf & database in the /example directory. This is f
 ==Very short HOWTO==
 
 Install the 1-wire libraries on your rPI
-Wire up your sensors according to the diagram here - just connect multiple sensors in parallel (http://webshed.org/wiki/File:Fritzing_rPI_DS1820.png)
+Wire up your sensors according to the diagram here - just connect multiple sensors in parallel (https://webshed.org/projects/raspberrypi-ds1820/)
 
 run detect.pl to find sesnors in the 1-wire bus
 edit sensors.conf to give them nice names (if you wish) and any offset / calibration values you need
